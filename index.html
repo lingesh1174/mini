@@ -71,6 +71,17 @@
                 alert("The complaint date must be today's date.");
                 event.preventDefault();  // Prevent form submission
             }
+
+            // Get the phone number
+            const phoneInput = document.getElementById('phone').value;
+
+            // Validate phone number
+            const phonePattern = /^[0-9]{10}$/;
+            if (!phonePattern.test(phoneInput)) {
+                alert("Please enter a valid 10-digit phone number.");
+                event.preventDefault(); // Prevent form submission
+                return;
+            }
         });
     </script>
 
