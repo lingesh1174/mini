@@ -56,6 +56,23 @@
             <button type="submit" class="btn btn-primary">Submit Complaint</button>
         </form>
     </div>
+    
+ <!-- JavaScript to validate that the complaint date is today's date -->
+    <script>
+        document.getElementById('complaintForm').addEventListener('submit', function(event) {
+            // Get the complaint date value
+            const complaintDate = document.getElementById('complaint_date').value;
+
+            // Get the current date in the format YYYY-MM-DD
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            // Check if the selected complaint date is equal to today's date
+            if (complaintDate !== currentDate) {
+                alert("The complaint date must be today's date.");
+                event.preventDefault();  // Prevent form submission
+            }
+        });
+    </script>
 
     <!-- Include Bootstrap JS (optional, for responsive behavior) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
