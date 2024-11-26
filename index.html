@@ -37,7 +37,13 @@
             <!-- Phone Number -->
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="text" class="form-control" id="phone" name="phone" required>
+                <input type="text" class="form-control" id="phone" name="phone" maxlength="10" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+            </div>
+
+            <!-- Aadhar Number -->
+            <div class="form-group">
+                <label for="aadhar">Aadhar Number</label>
+                <input type="text" class="form-control" id="aadhar" name="aadhar" maxlength="12" pattern="[0-9]{12}" title="Please enter a valid 12-digit Aadhar number" required>
             </div>
 
             <!-- Complaint Date -->
@@ -57,7 +63,7 @@
         </form>
     </div>
     
- <!-- JavaScript to validate that the complaint date is today's date -->
+    <!-- JavaScript for Validation -->
     <script>
         document.getElementById('complaintForm').addEventListener('submit', function(event) {
             // Get the complaint date value
@@ -70,6 +76,7 @@
             if (complaintDate !== currentDate) {
                 alert("The complaint date must be today's date.");
                 event.preventDefault();  // Prevent form submission
+                return;
             }
 
             // Get the phone number
@@ -79,6 +86,17 @@
             const phonePattern = /^[0-9]{10}$/;
             if (!phonePattern.test(phoneInput)) {
                 alert("Please enter a valid 10-digit phone number.");
+                event.preventDefault(); // Prevent form submission
+                return;
+            }
+
+            // Get the Aadhar number
+            const aadharInput = document.getElementById('aadhar').value;
+
+            // Validate Aadhar number
+            const aadharPattern = /^[0-9]{12}$/;
+            if (!aadharPattern.test(aadharInput)) {
+                alert("Please enter a valid 12-digit Aadhar number.");
                 event.preventDefault(); // Prevent form submission
                 return;
             }
