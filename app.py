@@ -53,15 +53,16 @@ def initialize_db():
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
             cursor.execute(f"USE {database}")
 
-            # Create the register table if it doesn't exist (formerly complaints)
+            # Create the complaintregister table if it doesn't exist
             cursor.execute('''
-            CREATE TABLE IF NOT EXISTS register (
+            CREATE TABLE IF NOT EXISTS complaintregister (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 complaint_title VARCHAR(255) NOT NULL,
                 complaint_description TEXT NOT NULL,
                 complainant_name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL,
                 phone VARCHAR(15) NOT NULL,
+                aadhar VARCHAR(12) NOT NULL,  -- Aadhar field
                 complaint_date DATE NOT NULL,
                 complaint_photo VARCHAR(255)  -- Path to the uploaded photo
             )
@@ -84,6 +85,7 @@ def register_complaint():
     complainant_name = request.form['complainant_name']
     email = request.form['email']
     phone = request.form['phone']
+    aadhar = request.form['aadhar']
     complaint_date = request.form['complaint_date']
 
     # Handle photo upload
@@ -101,9 +103,9 @@ def register_complaint():
         try:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO register (complaint_title, complaint_description, complainant_name, email, phone, complaint_date, complaint_photo)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            ''', (complaint_title, complaint_description, complainant_name, email, phone, complaint_date, photo_filename))
+                INSERT INTO complaintregister (complaint_title, complaint_description, complainant_name, email, phone, aadhar, complaint_date, complaint_photo)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (complaint_title, complaint_description, complainant_name, email, phone, aadhar, complaint_date, photo_filename))
             conn.commit()
             return redirect(url_for('view_complaints'))
         except Error as e:
@@ -122,7 +124,7 @@ def view_complaints():
     if conn:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM register")  # Changed from complaints to register
+            cursor.execute("SELECT * FROM complaintregister")
             complaints = cursor.fetchall()  # Fetch all rows
 
             return render_template('complaints.html', complaints=complaints)
