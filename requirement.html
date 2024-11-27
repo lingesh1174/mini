@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Equipment Order Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .product-card img {
+            max-height: 200px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        .product-card h5 {
+            font-size: 1.2rem;
+        }
+        .product-card .btn-add-to-cart {
+            background-color: #ff9900;
+            color: white;
+        }
+        .product-card .btn-add-to-cart:hover {
+            background-color: #e68900;
+        }
+        .cart-summary {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .cart-summary h4 {
+            font-size: 1.4rem;
+        }
+        .cart-summary .btn-proceed {
+            background-color: #28a745;
+            color: white;
+        }
+        .cart-summary .btn-proceed:hover {
+            background-color: #218838;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cart-item button {
+            background-color: #ff5733;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .cart-item button:hover {
+            background-color: #ff2d1b;
+        }
+        /* Responsive grid */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-md-4 {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+            padding: 10px;
+        }
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+        @media (max-width: 480px) {
+            .col-md-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="text-center mb-4">Order Required Equipment</h2>
+
+    <div class="row" id="product-list">
+        <!-- Dynamic product cards will be injected here -->
+    </div>
+
+    <!-- Hospital Information Form -->
+    <div class="form-group">
+        <label for="hospitalName">Hospital Name</label>
+        <input type="text" class="form-control" id="hospitalName" placeholder="Enter Hospital Name" required>
+    </div>
+    <div class="form-group">
+        <label for="hospitalLocation">Hospital Location</label>
+        <input type="text" class="form-control" id="hospitalLocation" placeholder="Enter Hospital Location" required>
+    </div>
+    <div class="form-group">
+        <label for="ordererName">Orderer's Name</label>
+        <input type="text" class="form-control" id="ordererName" placeholder="Enter Your Name" required>
+    </div>
+
+    <div class="cart-summary">
+        <h4>Cart Summary</h4>
+        <div id="cartItemsList"></div>
+        <button class="btn btn-proceed btn-block" onclick="submitOrder()">Proceed to Order</button>
+    </div>
+    <br><center><a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a></center>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    let cart = [];
+
+    const products = [
+        { name: "Oxygen Concentrator", image: "oxygen.jpg", description: "Portable oxygen concentrator for hospital use." },
+        { name: "Patient Bed", image: "bed.jpg", description: "Adjustable hospital bed for patients." },
+        { name: "Infusion Pump", image: "pump.jpg", description: "Precise infusion pump for controlled drug administration." },
+        { name: "ECG Machine", image: "ecg.jpg", description: "Electrocardiogram machine for heart monitoring." },
+        { name: "Blood Pressure Monitor", image: "bpmonitor.jpg", description: "Automatic blood pressure measuring device." },
+        { name: "Ventilator", image: "ventilator.jpg", description: "Medical ventilator for patient respiratory support." },
+        { name: "Surgical Light", image: "light.jpg", description: "High-intensity light for surgical procedures." },
+        { name: "X-Ray Machine", image: "xray.jpg", description: "X-Ray imaging equipment for diagnostic use." },
+        { name: "Defibrillator", image: "defibrillator.jpg", description: "Device for emergency heart rhythm correction." },
+        { name: "Wheelchair", image: "wheelchair.jpg", description: "Manual wheelchair for patient transport." },
+        { name: "Pulse Oximeter", image: "pulse.jpg", description: "Device for monitoring blood oxygen levels." },
+        { name: "Sterilizer", image: "sterilizer.jpg", description: "Autoclave sterilizer for medical instruments." }
+    ];
+
+    function addToCart(itemName, id) {
+        const quantity = document.getElementById('quantity' + id).value;
+        cart.push({ itemName: itemName, quantity: quantity });
+        updateCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+
+    function updateCart() {
+        const cartList = document.getElementById('cartItemsList');
+        cartList.innerHTML = '';
+        cart.forEach((item, index) => {
+            const cartItemDiv = document.createElement('div');
+            cartItemDiv.classList.add('cart-item');
+            cartItemDiv.innerHTML = `
+                <span>${item.itemName} - Quantity: ${item.quantity}</span>
+                <button onclick="removeFromCart(${index})">Remove</button>
+            `;
+            cartList.appendChild(cartItemDiv);
+        });
+    }
+
+    function submitOrder() {
+        if (cart.length === 0) {
+            alert('Please add items to your cart before proceeding.');
+            return;
+        }
+
+        // Collect the hospital and orderer details
+        const hospitalName = document.getElementById('hospitalName').value;
+        const hospitalLocation = document.getElementById('hospitalLocation').value;
+        const ordererName = document.getElementById('ordererName').value;
+
+        if (!hospitalName || !hospitalLocation || !ordererName) {
+            alert('Please fill in all the hospital details.');
+            return;
+        }
+
+        const orderData = {
+            hospitalName: hospitalName,
+            hospitalLocation: hospitalLocation,
+            ordererName: ordererName,
+            cartItems: cart
+        };
+
+        // Send the order data to the Flask backend
+        fetch('/submit_order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || 'Order submitted successfully!');
+        })
+        .catch(error => {
+            alert('Error submitting order: ' + error);
+        });
+    }
+
+    function loadProducts() {
+        const productListDiv = document.getElementById('product-list');
+        products.forEach((product, index) => {
+            const productCard = document.createElement('div');
+            productCard.classList.add('col-md-4', 'mb-4');
+            productCard.innerHTML = `
+                <div class="product-card">
+                    <img src="/static/images/${product.image}" alt="${product.name}">
+                    <h5>${product.name}</h5>
+                    <p class="text-muted">${product.description}</p>
+                    <div class="form-group">
+                        <label for="quantity${index + 1}">Quantity</label>
+                        <input type="number" class="form-control" id="quantity${index + 1}" name="quantity${index + 1}" min="1" value="1">
+                    </div>
+                    <button class="btn btn-add-to-cart btn-block" onclick="addToCart('${product.name}', ${index + 1})">Add to Cart</button>
+                </div>
+            `;
+            productListDiv.appendChild(productCard);
+        });
+    }
+
+    window.onload = loadProducts;
+</script>
+
+</body>
+</html>
