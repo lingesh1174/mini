@@ -99,10 +99,7 @@
     <h2 class="text-center mb-4">Order Required Equipment</h2>
 
     <div class="row" id="product-list">
-        <!-- Dynamic product cards will be injected here -->
     </div>
-
-    <!-- Hospital Information Form -->
     <div class="form-group">
         <label for="hospitalName">Hospital Name</label>
         <input type="text" class="form-control" id="hospitalName" placeholder="Enter Hospital Name" required>
@@ -176,7 +173,6 @@
             return;
         }
 
-        // Collect the hospital and orderer details
         const hospitalName = document.getElementById('hospitalName').value;
         const hospitalLocation = document.getElementById('hospitalLocation').value;
         const ordererName = document.getElementById('ordererName').value;
@@ -193,7 +189,6 @@
             cartItems: cart
         };
 
-        // Send the order data to the Flask backend
         fetch('/submit_order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
