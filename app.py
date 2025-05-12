@@ -5,23 +5,17 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Necessary for session handling
-
-# Set the folder for file uploads
+app.secret_key = 'your_secret_key'
 UPLOAD_FOLDER = 'uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# MySQL connection parameters
 host = 'localhost'
 user = 'root'
 password = 'Nagasrinivas@11'
 database = 'hospital_db'
 
-# Ensure the upload folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-
-# Function to connect to MySQL database
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
@@ -38,8 +32,6 @@ def get_db_connection():
         print(f"Error: {e}")
         return None
 
-
-# Function to initialize the database and tables
 def initialize_db():
     try:
         conn = mysql.connector.connect(
@@ -49,11 +41,8 @@ def initialize_db():
         )
         if conn.is_connected():
             cursor = conn.cursor()
-            # Create the database if it doesn't exist
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
             cursor.execute(f"USE {database}")
-
-            # Create the datatable for complaints
             cursor.execute(''' 
             CREATE TABLE IF NOT EXISTS datatable (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -70,8 +59,6 @@ def initialize_db():
                 complaint_photo VARCHAR(255)
             )
             ''')
-
-            # Create the orders table
             cursor.execute(''' 
             CREATE TABLE IF NOT EXISTS orders (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -88,9 +75,6 @@ def initialize_db():
     except Error as e:
         print(f"Error initializing database: {e}")
 
-
-# Routes for the application
-
 @app.route('/')
 def login():
     return render_template('login.html')
@@ -101,7 +85,6 @@ def login_user():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    # For simplicity, use hardcoded credentials. You can connect this to a database.
     if username == 'admin' and password == 'password':
         session['user'] = username
         return redirect(url_for('home'))
@@ -119,7 +102,7 @@ def logout():
 def home():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template('home.html')  # Page with links to navigate
+    return render_template('home.html')
 
 
 @app.route('/complaint')
@@ -145,7 +128,6 @@ def register_complaint():
     aadhar = request.form['aadhar']
     complaint_date = request.form['complaint_date']
 
-    # Handle photo upload
     complaint_photo = request.files.get('complaint_photo')
     photo_filename = None
     if complaint_photo:
