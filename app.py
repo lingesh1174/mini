@@ -11,7 +11,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 host = 'localhost'
 user = 'root'
-password = 'Nagasrinivas@11'
+password = '-------'
 database = 'hospital_db'
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
